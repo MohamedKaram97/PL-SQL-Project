@@ -12,6 +12,7 @@ This script creates a cursor to identify the relevant tables and columns, drop a
 The main goal of the project is to simplify database management and ensure data integrity.
 
 Tools and Technologies:
+
 PLSQL.
 Sequences.
 Triggers.
