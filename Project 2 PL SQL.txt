@@ -1,0 +1,60 @@
+DECLARE
+    -- Declare variables to store column values from EMPLOYEES_TEMP
+    v_JOB_ID VARCHAR2(50); 
+    v_DEPARTMENT_ID Number ( 10 ) ; 
+    v_locations_id Number (10 ) ; 
+    v_jobs_count Number (4) ; 
+    v_dep_count Number (4) ; 
+    v_cities_count Number (4) ; 
+    v_First_name VARCHAR2(50);
+    v_Last_name VARCHAR2(50);
+    v_Hire_date VARCHAR2(50);
+    v_Job_title VARCHAR2(50);
+    v_Salary NUMBER;
+    v_Email VARCHAR2(50);
+    v_department_name VARCHAR2(50);
+    v_City VARCHAR2(50);
+BEGIN
+    FOR src_rec IN (SELECT * FROM EMPLOYEES_TEMP ) LOOP
+        -- Assign values from the source record to variables.
+        v_First_name := src_rec.First_name;
+        v_Last_name := src_rec.Last_name;
+        v_Hire_date := src_rec.Hire_date;
+        v_Job_title := src_rec.Job_title;
+        v_Salary := src_rec.Salary;
+        v_Email := src_rec.Email;
+        v_department_name := src_rec.department_name;
+        v_City := src_rec.City;
+
+        
+        IF INSTR(v_Email, '@') > 0 THEN
+        
+             select count (*)  into v_jobs_count From jobs  where  JOB_TITLE  = v_Job_title ; 
+             IF v_jobs_count = 0 then 
+             Insert into jobs ( JOB_ID , JOB_TITLE ) Values ( SUBSTR (v_Job_title , 1 , 3 ) , v_Job_title ) ; 
+             End IF ; 
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+             Select Count (*) into  v_cities_count from LOCATIONS where CITY = v_City ; 
+             IF v_cities_count = 0 then 
+             insert into Locations (CITY) Values ( v_City ) ; 
+             End IF ; 
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Select LOCATION_ID into v_locations_id From LOCATIONS where City = v_City ; 
+
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Select Count (*) into v_dep_count from departments where DEPARTMENT_NAME = v_department_name ; 
+ If v_dep_count = 0 Then 
+ Insert into departments (DEPARTMENT_NAME , LOCATION_ID) Values ( v_department_name , v_locations_id ) ; 
+ End IF ; 
+ ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      Select DEPARTMENT_ID into v_DEPARTMENT_ID  From Departments Where DEPARTMENT_NAME = v_department_name ; 
+   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------     
+   Select JOB_ID into v_JOB_ID From Jobs Where JOB_TITLE  = v_Job_title ; 
+   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------     
+   
+            INSERT INTO EMPLOYEES (First_name, Last_name, Hire_date, JOB_ID, Salary, Email, DEPARTMENT_ID)
+            VALUES (v_First_name, v_Last_name, To_Date (v_Hire_date, 'DD/MM/YYYY'), v_JOB_ID, v_Salary, v_Email, v_DEPARTMENT_ID);
+        END IF;
+    END LOOP;
+END;
+/
